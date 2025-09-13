@@ -1,0 +1,32 @@
+repos:
+- repo: local
+  hooks:
+  - id: ruv sync
+    name: uv-sync
+    entry: uv sync
+    language: system
+    pass_filenames: false
+  - id: ruv lock
+    name: uv-lock
+    entry: uv lock
+    language: system
+    pass_filenames: false
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.12.3
+  hooks:
+    - id: ruff-check
+      args: [ --fix ]
+    - id: ruff-format
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: 1.16.0
+  hooks:
+  - id: mypy
+    exclude: ^tests/
+    args: [--config-file=pyproject.toml]
+    language_version: python3
