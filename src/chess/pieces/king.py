@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-from .piece import Color, Piece, Position
-
-_KING_OFFSETS = [
-    (-1, -1), (-1, 0), (-1, 1),
-    ( 0, -1),           ( 0, 1),
-    ( 1, -1), ( 1, 0), ( 1, 1),
-]
+from .piece import Color, Piece, Position, _KING_OFFSETS
 
 
 class King(Piece):

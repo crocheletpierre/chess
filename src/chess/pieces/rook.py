@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from .piece import Color, Piece, Position
-
-_CARDINALS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+from .piece import Color, Piece, Position, _CARDINALS
 
 
 class Rook(Piece):

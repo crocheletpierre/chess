@@ -1,13 +1,6 @@
 from __future__ import annotations
 
-from .piece import Color, Piece, Position
-
-_KNIGHT_OFFSETS = [
-    (-2, -1), (-2, 1),
-    (-1, -2), (-1, 2),
-    ( 1, -2), ( 1, 2),
-    ( 2, -1), ( 2, 1),
-]
+from .piece import Color, Piece, Position, _KNIGHT_OFFSETS
 
 
 class Knight(Piece):

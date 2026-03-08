@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-from .piece import Color, Piece, Position
-
-_ALL_DIRECTIONS = [
-    (-1, 0), (1, 0), (0, -1), (0, 1),   # cardinals
-    (-1, -1), (-1, 1), (1, -1), (1, 1),  # diagonals
-]
+from .piece import Color, Piece, Position, _DIAGONALS, _CARDINALS
 
 
 class Queen(Piece):
@@ -16,4 +11,4 @@ class Queen(Piece):
         return "♕" if self.color == Color.WHITE else "♛"
 
     def legal_moves(self, board: list[list[Piece | None]]) -> list[Position]:
-        return self._slide(board, _ALL_DIRECTIONS)
+        return self._slide(board, _DIAGONALS+_CARDINALS)

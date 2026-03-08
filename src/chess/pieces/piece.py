@@ -10,6 +10,20 @@ from termcolor import colored
 if TYPE_CHECKING:
     pass
 
+_DIAGONALS = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+_CARDINALS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+_KING_OFFSETS = [
+    (-1, -1), (-1, 0), (-1, 1),
+    ( 0, -1),           ( 0, 1),
+    ( 1, -1), ( 1, 0), ( 1, 1),
+]
+_KNIGHT_OFFSETS = [
+    (-2, -1), (-2, 1),
+    (-1, -2), (-1, 2),
+    ( 1, -2), ( 1, 2),
+    ( 2, -1), ( 2, 1),
+]
+
 # Board coordinates: row 0 = rank 8 (black's back rank), row 7 = rank 1 (white's back rank)
 Position = tuple[int, int]  # (row, col), both in range [0, 7]
 

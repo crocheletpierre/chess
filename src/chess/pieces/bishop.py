@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from .piece import Color, Piece, Position
-
-_DIAGONALS = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+from .piece import Color, Piece, Position, _DIAGONALS
 
 
 class Bishop(Piece):
