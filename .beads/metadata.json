@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "chess_project",
+  "project_id": "8fddbaf4-7b0a-4296-bfbd-ec1285ecd831"
+}
