@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import copy
 
 from .pieces import Bishop, Color, King, Knight, Pawn, Queen, Rook
@@ -14,29 +12,25 @@ class Board:
 
     def __init__(self) -> None:
         self.grid: list[list[Piece | None]] = [[None] * 8 for _ in range(8)]
-        # Square where an en passant capture is currently possible (the square the
-        # capturing pawn lands on, i.e. behind the double-pushed pawn).
+        # The square the capturing pawn lands on, i.e. behind the double-pushed pawn
         self.en_passant_square: Position | None = None
 
     @classmethod
     def new_game(cls) -> "Board":
         """Return a Board with the standard chess starting position."""
         board = cls()
-        # Black back rank and pawns
+        # Black setup
         for col, piece_cls in enumerate(_BACK_RANK):
             board.grid[0][col] = piece_cls(color=Color.BLACK, position=(0, col))
         for col in range(8):
             board.grid[1][col] = Pawn(color=Color.BLACK, position=(1, col))
-        # White pawns and back rank
+
+        # White setup
         for col in range(8):
             board.grid[6][col] = Pawn(color=Color.WHITE, position=(6, col))
         for col, piece_cls in enumerate(_BACK_RANK):
             board.grid[7][col] = piece_cls(color=Color.WHITE, position=(7, col))
         return board
-
-    # ------------------------------------------------------------------
-    # Queries
-    # ------------------------------------------------------------------
 
     def piece_at(self, position: Position) -> Piece | None:
         row, col = position
@@ -48,7 +42,7 @@ class Board:
                 piece = self.grid[row][col]
                 if isinstance(piece, King) and piece.color == color:
                     return (row, col)
-        raise RuntimeError(f"No {color.value} king on the board")
+        raise RuntimeError(f"No {color.value} king on the board. The game should be over")
 
     def is_in_check(self, color: Color) -> bool:
         """Return True if the *color* king is currently attacked by any opponent piece."""
@@ -131,7 +125,7 @@ class Board:
     def move(self, from_pos: Position, to_pos: Position) -> Piece | None:
         """Execute a move and return the captured piece (or None).
 
-        Handles: normal moves, en passant capture, castling rook swap,
+        Handles: normal moves, en passant capture, castling,
         pawn promotion (auto-promotes to Queen), and en passant square updates.
         """
         from_row, from_col = from_pos
@@ -146,7 +140,6 @@ class Board:
 
         # --- En passant capture ---
         if isinstance(piece, Pawn) and to_pos == self.en_passant_square:
-            # The captured pawn sits on the same rank as the moving pawn
             captured_row = from_row
             captured = self.grid[captured_row][to_col]
             self.grid[captured_row][to_col] = None
@@ -171,7 +164,6 @@ class Board:
                 rook.position = rook_to
                 rook.has_moved = True
 
-        # --- Execute the move ---
         self.grid[to_row][to_col] = piece
         self.grid[from_row][from_col] = None
         piece.position = to_pos
@@ -179,7 +171,7 @@ class Board:
         if isinstance(piece, (Pawn, King, Rook)):
             piece.has_moved = True
 
-        # --- Pawn promotion: auto-promote to Queen ---
+        # --- Pawn promotion ---
         back_rank = 0 if piece.color == Color.WHITE else 7
         if isinstance(piece, Pawn) and to_row == back_rank:
             self.grid[to_row][to_col] = Queen(color=piece.color, position=to_pos)
