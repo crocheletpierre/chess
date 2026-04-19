@@ -6,6 +6,24 @@ from .pieces.piece import Piece, Position
 _FILE_LABELS = "  a b c d e f g h"
 _BACK_RANK = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
 
+_FEN_EXPORT: dict[type, str] = {
+    King: "K", Queen: "Q", Rook: "R", Bishop: "B", Knight: "N", Pawn: "P",
+}
+_FEN_IMPORT: dict[str, type] = {
+    "k": King, "q": Queen, "r": Rook, "b": Bishop, "n": Knight, "p": Pawn,
+}
+
+
+def _piece_to_fen_char(piece: Piece) -> str:
+    ch = _FEN_EXPORT[type(piece)]
+    return ch if piece.color == Color.WHITE else ch.lower()
+
+
+def _fen_char_to_piece(ch: str, position: tuple[int, int]) -> Piece:
+    color = Color.WHITE if ch.isupper() else Color.BLACK
+    cls = _FEN_IMPORT[ch.lower()]
+    return cls(color=color, position=position)
+
 
 class Board:
     """8x8 chess board managing piece placement, move execution, and rule enforcement."""
@@ -238,6 +256,89 @@ class Board:
                     if square in piece.legal_moves(self.grid):
                         return True
         return False
+
+    # ------------------------------------------------------------------
+    # FEN helpers
+    # ------------------------------------------------------------------
+
+    def fen_position(self) -> str:
+        """Return the piece-placement field of FEN (ranks 8→1, slash-separated)."""
+        rows = []
+        for row in self.grid:
+            empty = 0
+            rank = ""
+            for cell in row:
+                if cell is None:
+                    empty += 1
+                else:
+                    if empty:
+                        rank += str(empty)
+                        empty = 0
+                    rank += _piece_to_fen_char(cell)
+            if empty:
+                rank += str(empty)
+            rows.append(rank)
+        return "/".join(rows)
+
+    def fen_castling(self) -> str:
+        """Return the castling-availability field of FEN."""
+        rights = ""
+        wk = self.grid[7][4]
+        if isinstance(wk, King) and not wk.has_moved:
+            if isinstance(self.grid[7][7], Rook) and not self.grid[7][7].has_moved:  # type: ignore[union-attr]
+                rights += "K"
+            if isinstance(self.grid[7][0], Rook) and not self.grid[7][0].has_moved:  # type: ignore[union-attr]
+                rights += "Q"
+        bk = self.grid[0][4]
+        if isinstance(bk, King) and not bk.has_moved:
+            if isinstance(self.grid[0][7], Rook) and not self.grid[0][7].has_moved:  # type: ignore[union-attr]
+                rights += "k"
+            if isinstance(self.grid[0][0], Rook) and not self.grid[0][0].has_moved:  # type: ignore[union-attr]
+                rights += "q"
+        return rights or "-"
+
+    @classmethod
+    def from_fen_position(cls, placement: str, castling: str = "KQkq") -> "Board":
+        """Construct a Board from the piece-placement and castling fields of FEN."""
+        board = cls()
+        for rank_idx, rank_str in enumerate(placement.split("/")):
+            col = 0
+            for ch in rank_str:
+                if ch.isdigit():
+                    col += int(ch)
+                else:
+                    board.grid[rank_idx][col] = _fen_char_to_piece(ch, (rank_idx, col))
+                    col += 1
+        # Mark has_moved for kings/rooks based on castling rights
+        if "K" not in castling:
+            p = board.grid[7][7]
+            if isinstance(p, Rook):
+                p.has_moved = True
+        if "Q" not in castling:
+            p = board.grid[7][0]
+            if isinstance(p, Rook):
+                p.has_moved = True
+        if "k" not in castling:
+            p = board.grid[0][7]
+            if isinstance(p, Rook):
+                p.has_moved = True
+        if "q" not in castling:
+            p = board.grid[0][0]
+            if isinstance(p, Rook):
+                p.has_moved = True
+        if "K" not in castling and "Q" not in castling:
+            p = board.grid[7][4]
+            if isinstance(p, King):
+                p.has_moved = True
+        if "k" not in castling and "q" not in castling:
+            p = board.grid[0][4]
+            if isinstance(p, King):
+                p.has_moved = True
+        return board
+
+    # ------------------------------------------------------------------
+    # Display
+    # ------------------------------------------------------------------
 
     def render(self) -> str:
         """Return a terminal-friendly string of the current board state."""
