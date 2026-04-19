@@ -15,3 +15,8 @@ chess = "chess.main:main"
 
 [tool.uv]
 package = true
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]
