@@ -115,6 +115,7 @@ def main() -> None:
     )
     parser.add_argument("--white", metavar="AGENT_FILE", help="Python file containing an Agent subclass to play white")
     parser.add_argument("--black", metavar="AGENT_FILE", help="Python file containing an Agent subclass to play black")
+    parser.add_argument("--delay", metavar="SECONDS", type=float, default=0.4, help="Pause between agent moves (default 0.4s, use 0 for instant)")
     args = parser.parse_args()
 
     white_agent = _load_agent(args.white) if args.white else None
@@ -148,7 +149,7 @@ def main() -> None:
 
         if agent is not None:
             print(f"\n  {game.current_turn.value.capitalize()} [{agent.name}] is thinking...")
-            time.sleep(0.4)
+            time.sleep(args.delay)
             from_pos, to_pos = agent.choose_move(game)
             record = game.make_move(from_pos, to_pos)
             _print_move(record, agent.name)
