@@ -10,5 +10,8 @@ dependencies = [
     "termcolor>=3.1.0",
 ]
 
+[project.scripts]
+chess = "chess.main:main"
+
 [tool.uv]
 package = true
