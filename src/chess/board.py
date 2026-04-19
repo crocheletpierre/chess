@@ -239,10 +239,6 @@ class Board:
                         return True
         return False
 
-    # ------------------------------------------------------------------
-    # Display
-    # ------------------------------------------------------------------
-
     def render(self) -> str:
         """Return a terminal-friendly string of the current board state."""
         lines = [_FILE_LABELS]
