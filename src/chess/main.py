@@ -66,7 +66,10 @@ def _load_agent(path_str: str) -> Agent:
 
     candidates = [
         cls for _, cls in inspect.getmembers(module, inspect.isclass)
-        if issubclass(cls, Agent) and cls is not Agent and not inspect.isabstract(cls)
+        if issubclass(cls, Agent)
+        and cls is not Agent
+        and not inspect.isabstract(cls)
+        and cls.__module__ == module.__name__
     ]
 
     if not candidates:
